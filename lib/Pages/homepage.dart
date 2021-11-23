@@ -4,7 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:gender_prediction/API/gender_prediction_api.dart';
+import 'package:gender_prediction/Model/model.dart';
+import 'package:gender_prediction/main.dart';
 import 'package:gender_prediction/utils/utils.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -20,39 +23,14 @@ class _HomepageState extends State<Homepage> {
   TextEditingController controller = TextEditingController();
   bool isApi = false;
 
-  main(
-    String name,
-  ) async {
-    var baseUrl = 'https://api.genderize.io?name=$name';
-    // This example uses the Google Books API to search for books about http.
-    // https://developers.google.com/books/docs/overview
-    var url = Uri.parse(baseUrl);
-
-    // Await the http get response, then decode the json-formatted response.
-    var response = await http.get(url);
-
-    print(response.body);
-
-    if (response.statusCode == 200) {
-      var jsonResponse =
-          convert.jsonDecode(response.body) as Map<String, dynamic>;
-
-      print('json response$jsonResponse');
-
-      return jsonResponse;
-    } else if (ConnectionState == ConnectionState.none) {
-      print('Request failed with status: ${response.statusCode}.');
-    }
-  }
-
-  var response;
+  Future<ApiClass>? futureapi;
 
   @override
   void initState() {
     super.initState();
-    isApi = true;
-   response= main('ladu');
-    isApi = false;
+    futureapi = main1(controller.text.toString());
+
+    print('future ${futureapi}');
   }
 
   @override
@@ -86,11 +64,14 @@ class _HomepageState extends State<Homepage> {
                           margin: EdgeInsets.only(left: 20),
                           width: MediaQuery.of(context).size.width * 0.70,
                           child: TextField(
+                            style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),
                               controller: controller,
                               onChanged: (value) {
-                                value = controller.text.toString();
+                                value = controller.text;
                               },
                               decoration: InputDecoration(
+                              
+                               
                                 label: Text(
                                   'Please Enter the Name',
                                   style: TextStyle(
@@ -101,11 +82,12 @@ class _HomepageState extends State<Homepage> {
                               )),
                         ),
                         InkWell(
-                          onTap: () {
-                            isApi = true;
-                            GendeerApi.main(
-                              controller.text.toString(),
-                            );
+                          onTap: () async {
+                            futureapi = main1(controller.text);
+
+                            setState(() {
+                             
+                            });
                           },
                           child: Container(
                               height: 50,
@@ -133,8 +115,8 @@ class _HomepageState extends State<Homepage> {
                   Center(
                     child: Container(
                       margin: EdgeInsets.only(top: 80),
-                      height: MediaQuery.of(context).size.height * 0.43,
-                      width: MediaQuery.of(context).size.width * 0.70,
+                      height: MediaQuery.of(context).size.height * 0.42,
+                      width: MediaQuery.of(context).size.width * 0.65,
                       decoration: BoxDecoration(
                         color: Colors.white54,
                         borderRadius: BorderRadius.circular(30),
@@ -144,7 +126,7 @@ class _HomepageState extends State<Homepage> {
                   Center(
                     child: Container(
                       margin: EdgeInsets.only(top: 50),
-                      height: MediaQuery.of(context).size.height * 0.40,
+                      height: MediaQuery.of(context).size.height * 0.41,
                       width: MediaQuery.of(context).size.width * 0.75,
                       decoration: BoxDecoration(
                         color: Colors.white60,
@@ -154,7 +136,7 @@ class _HomepageState extends State<Homepage> {
                   ),
                   Center(
                     child: Container(
-                      height: MediaQuery.of(context).size.height * 0.40,
+                      height: MediaQuery.of(context).size.height * 0.42,
                       width: MediaQuery.of(context).size.width * 0.85,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -166,29 +148,59 @@ class _HomepageState extends State<Homepage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(left: 16),
-                              child: Text(
-                                '',
-                                style: TextStyle(
-                                    color: Colors.black54, fontSize: 40),
-                              ),
-                            ),
+                                padding: const EdgeInsets.only(left: 16),
+                                child: FutureBuilder<ApiClass>(
+                                    future: futureapi,
+                                    builder: (
+                                      context,
+                                      snapshot,
+                                    ) {
+                                      if (snapshot.hasData) {
+                                        return Text(
+                                            snapshot.data!.name.toString(),
+                                            style: TextStyle(
+                                                color: Colors.black54,
+                                                fontSize: 40));
+                                      } else if (snapshot.hasError) {
+                                        return const Text( 'Name :Plaese Enter the Name');
+                                      }
+                                      return const CircularProgressIndicator();
+                                    })),
+                            Padding(
+                                padding: const EdgeInsets.only(left: 16),
+                                child: FutureBuilder<ApiClass>(
+                                    future: futureapi,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(
+                                            'Gender : ${snapshot.data!.gender}',
+                                            style: TextStyle(
+                                              color: Colors.black45,
+                                              fontSize: 20,
+                                            ));
+                                      } else if (snapshot.hasError) {
+                                        return const Text( 'Gender : Null');
+                                      }
+                                      return const CircularProgressIndicator();
+                                    })),
                             Padding(
                               padding: const EdgeInsets.only(left: 16),
-                              child: Text(
-                                'Gender : male',
-                                style: TextStyle(
-                                    color: Colors.black45, fontSize: 20),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16),
-                              child: Text(
-                                'Chance of correcton : 0.90',
-                                style: TextStyle(
-                                    color: Colors.black45, fontSize: 20),
-                              ),
-                            )
+                              child:FutureBuilder<ApiClass>(
+                                    future: futureapi,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(
+                                            'Probability : ${snapshot.data!.probability}',
+                                            style: TextStyle(
+                                              color: Colors.black45,
+                                              fontSize: 20,
+                                            ));
+                                      } else if (snapshot.hasError) {
+                                        return const Text('Probability: Null ');
+                                      }
+                                      return const CircularProgressIndicator();
+                                    })),
+                              
                           ],
                         ),
                       ),
@@ -199,7 +211,8 @@ class _HomepageState extends State<Homepage> {
                       alignment: Alignment.topCenter,
                       height: 300,
                       child: Image(
-                        image: AssetImage('assets/male.png'),
+                        image:
+                         AssetImage('assets/male.png'),
                         filterQuality: FilterQuality.high,
                         fit: BoxFit.fill,
                         colorBlendMode: BlendMode.color,

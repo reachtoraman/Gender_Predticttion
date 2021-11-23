@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gender_prediction/Pages/api.dart';
 import 'package:gender_prediction/Pages/homepage.dart';
 
 void main() {
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(debugShowCheckedModeBanner: false,
-      home: Homepage(),
+      home:Homepage(),
 
       
       
