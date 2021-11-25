@@ -1,16 +1,15 @@
-import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gender_prediction/API/gender_prediction_api.dart';
 import 'package:gender_prediction/Model/model.dart';
-import 'package:gender_prediction/main.dart';
 import 'package:gender_prediction/utils/utils.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
+
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -30,11 +29,20 @@ class _HomepageState extends State<Homepage> {
     super.initState();
     futureapi = main1(controller.text.toString());
 
-    print('future ${futureapi}');
+    // ignore: avoid_print
+    print('future $futureapi');
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFFF8D8C9),
+      systemNavigationBarDividerColor: Color(0xFFF8D8C9),
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -61,10 +69,10 @@ class _HomepageState extends State<Homepage> {
                     child: Row(
                       children: [
                         Container(
-                          margin: EdgeInsets.only(left: 20),
+                          margin: const EdgeInsets.only(left: 20),
                           width: MediaQuery.of(context).size.width * 0.70,
                           child: TextField(
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
@@ -72,7 +80,7 @@ class _HomepageState extends State<Homepage> {
                               onChanged: (value) {
                                 value = controller.text;
                               },
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 label: Text(
                                   'Please Enter the Name',
                                   style: TextStyle(
@@ -91,29 +99,28 @@ class _HomepageState extends State<Homepage> {
                           child: Container(
                               height: 50,
                               width: 100,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.white,
                               ),
-                              child: Icon(Icons.arrow_forward)),
+                              child: const Icon(Icons.arrow_forward)),
                         )
                       ],
                     ),
                   ),
                   Center(
                     child: Container(
-                      margin: EdgeInsets.only(top: 20),
+                      margin: const EdgeInsets.only(top: 20),
                       height: MediaQuery.of(context).size.height * 0.60,
                       width: MediaQuery.of(context).size.width * 0.90,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.transparent,
-                        // borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                   ),
                   Center(
                     child: Container(
-                      margin: EdgeInsets.only(top: 80),
+                      margin: const EdgeInsets.only(top: 80),
                       height: MediaQuery.of(context).size.height * 0.42,
                       width: MediaQuery.of(context).size.width * 0.65,
                       decoration: BoxDecoration(
@@ -124,7 +131,7 @@ class _HomepageState extends State<Homepage> {
                   ),
                   Center(
                     child: Container(
-                      margin: EdgeInsets.only(top: 50),
+                      margin: const EdgeInsets.only(top: 50),
                       height: MediaQuery.of(context).size.height * 0.41,
                       width: MediaQuery.of(context).size.width * 0.75,
                       decoration: BoxDecoration(
@@ -156,8 +163,10 @@ class _HomepageState extends State<Homepage> {
                                     ) {
                                       if (snapshot.hasData) {
                                         return Text(
-                                            snapshot.data!.name.toString(),
-                                            style: TextStyle(
+                                            snapshot.data!.name
+                                                .toString()
+                                                .toUpperCase(),
+                                            style: const TextStyle(
                                                 color: Colors.black54,
                                                 fontSize: 40));
                                       } else if (snapshot.hasError) {
@@ -173,13 +182,14 @@ class _HomepageState extends State<Homepage> {
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
                                         return Text(
-                                            'Gender : ${snapshot.data!.gender}',
-                                            style: TextStyle(
+                                            'GENDER : ${snapshot.data!.gender!.toUpperCase()}',
+                                            style: const TextStyle(
                                               color: Colors.black45,
                                               fontSize: 20,
                                             ));
                                       } else if (snapshot.hasError) {
-                                        return const Text('Gender : I will Guess your Gender');
+                                        return const Text(
+                                            'Gender : I will Guess your Gender');
                                       }
                                       return const CircularProgressIndicator();
                                     })),
@@ -189,14 +199,26 @@ class _HomepageState extends State<Homepage> {
                                     future: futureapi,
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
-                                        return Text(
-                                            'Probability : ${snapshot.data!.probability}',
-                                            style: TextStyle(
-                                              color: Colors.black45,
-                                              fontSize: 20,
-                                            ));
+                                        return Text.rich(TextSpan(children: [
+                                          const TextSpan(
+                                              text: 'PROBABILITY :',
+                                              style: TextStyle(
+                                                color: Colors.black45,
+                                                fontSize: 20,
+                                              )),
+                                          TextSpan(
+                                              text:
+                                                  ' ${snapshot.data!.probability}',
+                                              style: const TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 20,
+                                              )),
+                                        ]));
+
+                                       
                                       } else if (snapshot.hasError) {
-                                        return const Text('Probability: My Prediction Percentage ');
+                                        return const Text(
+                                            'Probability: My Prediction Percentage ');
                                       }
                                       return const CircularProgressIndicator();
                                     })),
@@ -206,7 +228,7 @@ class _HomepageState extends State<Homepage> {
                     ),
                   ),
                   Container(
-                      margin: EdgeInsets.only(top: 110),
+                      margin: const EdgeInsets.only(top: 110),
                       alignment: Alignment.topCenter,
                       height: 300,
                       child: FutureBuilder<ApiClass>(
@@ -225,18 +247,16 @@ class _HomepageState extends State<Homepage> {
                               return Center(
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200)
-                                  ),
-                                  margin: EdgeInsets.only(top: 80),
+                                      borderRadius: BorderRadius.circular(200)),
+                                  margin: const EdgeInsets.only(top: 80),
                                   alignment: Alignment.topCenter,
                                   height: 300,
                                   width: 300,
-                                 
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(200),
-                                    
                                     child: const Image(
-                                        image: AssetImage('assets/male_female.jpg'),
+                                        image: AssetImage(
+                                            'assets/male_female.jpg'),
                                         filterQuality: FilterQuality.high,
                                         fit: BoxFit.cover,
                                         colorBlendMode: BlendMode.color),
@@ -255,9 +275,3 @@ class _HomepageState extends State<Homepage> {
     );
   }
 }
-
-//  Image(
-//                                       image: AssetImage('assets/female.png'),
-//                                       filterQuality: FilterQuality.high,
-//                                       fit: BoxFit.fill,
-//                                       colorBlendMode: BlendMode.color)
