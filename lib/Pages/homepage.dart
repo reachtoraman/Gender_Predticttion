@@ -64,14 +64,15 @@ class _HomepageState extends State<Homepage> {
                           margin: EdgeInsets.only(left: 20),
                           width: MediaQuery.of(context).size.width * 0.70,
                           child: TextField(
-                            style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                               controller: controller,
                               onChanged: (value) {
                                 value = controller.text;
                               },
                               decoration: InputDecoration(
-                              
-                               
                                 label: Text(
                                   'Please Enter the Name',
                                   style: TextStyle(
@@ -85,9 +86,7 @@ class _HomepageState extends State<Homepage> {
                           onTap: () async {
                             futureapi = main1(controller.text);
 
-                            setState(() {
-                             
-                            });
+                            setState(() {});
                           },
                           child: Container(
                               height: 50,
@@ -162,7 +161,8 @@ class _HomepageState extends State<Homepage> {
                                                 color: Colors.black54,
                                                 fontSize: 40));
                                       } else if (snapshot.hasError) {
-                                        return const Text( 'Name :Plaese Enter the Name');
+                                        return const Text(
+                                            'Name :Plaese Enter the Name');
                                       }
                                       return const CircularProgressIndicator();
                                     })),
@@ -179,13 +179,13 @@ class _HomepageState extends State<Homepage> {
                                               fontSize: 20,
                                             ));
                                       } else if (snapshot.hasError) {
-                                        return const Text( 'Gender : Null');
+                                        return const Text('Gender : I will Guess your Gender');
                                       }
                                       return const CircularProgressIndicator();
                                     })),
                             Padding(
-                              padding: const EdgeInsets.only(left: 16),
-                              child:FutureBuilder<ApiClass>(
+                                padding: const EdgeInsets.only(left: 16),
+                                child: FutureBuilder<ApiClass>(
                                     future: futureapi,
                                     builder: (context, snapshot) {
                                       if (snapshot.hasData) {
@@ -196,11 +196,10 @@ class _HomepageState extends State<Homepage> {
                                               fontSize: 20,
                                             ));
                                       } else if (snapshot.hasError) {
-                                        return const Text('Probability: Null ');
+                                        return const Text('Probability: My Prediction Percentage ');
                                       }
                                       return const CircularProgressIndicator();
                                     })),
-                              
                           ],
                         ),
                       ),
@@ -210,13 +209,43 @@ class _HomepageState extends State<Homepage> {
                       margin: EdgeInsets.only(top: 110),
                       alignment: Alignment.topCenter,
                       height: 300,
-                      child: Image(
-                        image:
-                         AssetImage('assets/male.png'),
-                        filterQuality: FilterQuality.high,
-                        fit: BoxFit.fill,
-                        colorBlendMode: BlendMode.color,
-                      ))
+                      child: FutureBuilder<ApiClass>(
+                          future: futureapi,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Image(
+                                  image: AssetImage(
+                                      snapshot.data!.gender!.contains('female')
+                                          ? 'assets/female.png'
+                                          : 'assets/male.png'),
+                                  filterQuality: FilterQuality.high,
+                                  fit: BoxFit.fill,
+                                  colorBlendMode: BlendMode.color);
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200)
+                                  ),
+                                  margin: EdgeInsets.only(top: 80),
+                                  alignment: Alignment.topCenter,
+                                  height: 300,
+                                  width: 300,
+                                 
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(200),
+                                    
+                                    child: const Image(
+                                        image: AssetImage('assets/male_female.jpg'),
+                                        filterQuality: FilterQuality.high,
+                                        fit: BoxFit.cover,
+                                        colorBlendMode: BlendMode.color),
+                                  ),
+                                ),
+                              );
+                            }
+                            return const CircularProgressIndicator();
+                          })),
                 ],
               ),
             ),
@@ -226,3 +255,9 @@ class _HomepageState extends State<Homepage> {
     );
   }
 }
+
+//  Image(
+//                                       image: AssetImage('assets/female.png'),
+//                                       filterQuality: FilterQuality.high,
+//                                       fit: BoxFit.fill,
+//                                       colorBlendMode: BlendMode.color)
