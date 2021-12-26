@@ -1,4 +1,4 @@
-package com.example.gender_prediction
+package gender.prediction
 
 import io.flutter.embedding.android.FlutterActivity
 

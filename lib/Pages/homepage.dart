@@ -9,7 +9,6 @@ import 'package:gender_prediction/API/gender_prediction_api.dart';
 import 'package:gender_prediction/Model/model.dart';
 import 'package:gender_prediction/utils/utils.dart';
 
-
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
 
@@ -93,7 +92,9 @@ class _HomepageState extends State<Homepage> {
                           onTap: () async {
                             futureapi = main1(controller.text);
 
-                            setState(() {});
+                            setState(() {
+                              controller.clear();
+                            });
                           },
                           child: Container(
                               height: 50,
@@ -213,8 +214,6 @@ class _HomepageState extends State<Homepage> {
                                                 fontSize: 20,
                                               )),
                                         ]));
-
-                                       
                                       } else if (snapshot.hasError) {
                                         return const Text(
                                             'Probability: My Prediction Percentage ');
